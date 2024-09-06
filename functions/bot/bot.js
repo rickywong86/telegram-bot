@@ -1,15 +1,27 @@
 const { Telegraf } = require("telegraf")
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
-bot.start(ctx => {
-    console.log("Received /start command")
-    try {
-        return ctx.reply("Hi")
-    } catch (e) {
-        console.error("error in start action:", e)
-        return ctx.reply("Error occured")
-    }
-})
+bot.start((ctx) => {
+    ctx.reply('Welcome to your Telegram bot! Use /help to see available commands.');
+});
+
+bot.help((ctx) => {
+    ctx.reply('Available commands:\n/newarticle - Create a new article');
+});
+
+bot.command('newarticle', (ctx) => {
+    ctx.reply('Please enter the title of your article:');
+    bot.on('text', async (ctx) => {
+        const title = ctx.message.text;
+        ctx.reply('Please enter the content of your article:');
+        bot.on('text', async (ctx) => {
+            const content = ctx.message.text;
+
+            // Call a function to create the article using the title and content
+            createArticle(ctx, title, content);
+        });
+    });
+});
 
 // AWS event handler syntax (https://docs.aws.amazon.com/lambda/latest/dg/nodejs-handler.html)
 exports.handler = async event => {
